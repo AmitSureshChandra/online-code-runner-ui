@@ -2,9 +2,7 @@
   <div class="container">
     <div class="editor-container">
       <select v-model="language" class="language-select">
-        <option value="jdk8">Java 8</option>
-        <option value="python">Python</option>
-        <!-- Add more language options as needed -->
+        <option v-for="(item, index) in compilers" :key="index" :value="language">{{item}}</option>
       </select>
       <textarea v-model="code" class="editor" placeholder="Type your code here"></textarea>
       <button @click="runCode" :disabled="loading" class="run-button">Run Code</button>
@@ -34,10 +32,28 @@ export default {
 }`,
       input: "",
       output: "",
-      loading: false
+      loading: false,
+      compilers : {
+        "jdk8" : "Java 8"
+      }
     };
   },
+  mounted(){
+    this.loadCompilers()
+  },  
   methods: {
+    loadCompilers() {
+      this.loading = true
+      axios.get("/api/v1/run/compilers").then(({data}) => {
+        this.compilers = data
+        console.log(data);
+      }).catch(e => {
+        console.log({e});
+      })
+      .finally(() => {
+        this.loading = false
+      })
+    },
     runCode() {
       // make a api call & then set output
       this.loading = true
