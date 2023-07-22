@@ -43,9 +43,13 @@ export default {
       this.loading = true
       axios.post("/api/v1/run", {
         compiler: this.language,
-        code: this.code
+        code: this.code,
+        input: this.input
       }).then(({data}) => {
         this.output = data.output
+        if(data.exitCode != 0) {
+          this.output = data.error
+        }
       }).catch(e => {
         console.log({e});
       })
