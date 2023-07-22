@@ -2,7 +2,7 @@
   <div class="container">
     <div class="editor-container">
       <select v-model="language" class="language-select">
-        <option v-for="(item, index) in compilers" :key="index" :value="language">{{item}}</option>
+        <option v-for="(item, index) in compilers" :key="index" :value="index">{{item}}</option>
       </select>
       <textarea v-model="code" class="editor" placeholder="Type your code here"></textarea>
       <button @click="runCode" :disabled="loading" class="run-button">Run Code</button>
@@ -34,7 +34,7 @@ export default {
       output: "",
       loading: false,
       compilers : {
-        "jdk8" : "Java 8"
+        
       }
     };
   },
