@@ -84,7 +84,6 @@ func main() {
       axios.get("/api/v1/run/compilers").then(({data}) => {
         this.compilers = data
         this.code = this.sampleCode[this.language]
-        console.log(data);
       }).catch(e => {
         console.log({e});
       })
