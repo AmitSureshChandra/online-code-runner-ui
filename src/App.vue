@@ -1,11 +1,12 @@
 <template>
   <div class="container">
     <div class="editor-container">
-      <select v-model="language" class="language-select">
-        <option value="jdk8">Java 8</option>
-        <option value="python">Python</option>
-        <!-- Add more language options as needed -->
-      </select>
+      <div>
+        <select v-model="language" @change="setDefaultCode" class="language-select">
+          <option v-for="(item, index) in compilers" :key="index" :value="index">{{item}}</option>
+        </select>
+        <button @click="resetCode" :disabled="loading" class="reset-button">Reset Code</button>
+      </div>
       <textarea v-model="code" class="editor" placeholder="Type your code here"></textarea>
       <button @click="runCode" :disabled="loading" class="run-button">Run Code</button>
     </div>
@@ -27,17 +28,70 @@ export default {
   data() {
     return {
       language: "jdk8",
-      code: `class Solution  {
+      sampleCode: {
+        jdk8 : `class Solution  {
    public static void main(String[] args) {
        System.out.println("Hello World");
    }
 }`,
+      jdk20:  `class Solution  {
+   public static void main(String[] args) {
+       System.out.println("Hello World");
+   }
+}`,
+      golang12 : `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}`
+      },
+      bkSampleCode: {
+        jdk8 : `class Solution  {
+   public static void main(String[] args) {
+       System.out.println("Hello World");
+   }
+}`,
+      jdk20:  `class Solution  {
+   public static void main(String[] args) {
+       System.out.println("Hello World");
+   }
+}`,
+      golang12 : `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}`
+      },
+      code : '',
       input: "",
       output: "",
-      loading: false
+      loading: false,
+      compilers : {
+        
+      }
     };
   },
+  mounted(){
+    this.loadCompilers()
+  },  
   methods: {
+    loadCompilers() {
+      this.loading = true
+      axios.get("/api/v1/run/compilers").then(({data}) => {
+        this.compilers = data
+        this.code = this.sampleCode[this.language]
+        console.log(data);
+      }).catch(e => {
+        console.log({e});
+      })
+      .finally(() => {
+        this.loading = false
+      })
+    },
     runCode() {
       // make a api call & then set output
       this.loading = true
@@ -57,6 +111,15 @@ export default {
         this.loading = false
       })
     },
+
+    setDefaultCode(e) {
+      this.code = this.sampleCode[e.target.value]
+    },
+
+    resetCode() {
+      if(confirm("You will lose you current code, Do you want to proceed?"))
+        this.code = this.bkSampleCode[this.language]
+    }
   },
 };
 </script>
@@ -92,13 +155,17 @@ export default {
 }
 
 .run-button {
-  margin-top: 10px;
+  /* margin-top: 10px;
   padding: 10px 20px;
   background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: pointer; */
+}
+
+.reset-button {
+
 }
 
 .input-container {
