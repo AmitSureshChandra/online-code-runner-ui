@@ -100,9 +100,7 @@ func main() {
         input: this.input
       }).then(({data}) => {
         this.output = data.output
-        if(data.exitCode != 0) {
-          this.output = data.error
-        }
+          if(this.output === "") this.output =  data.error
       }).catch(e => {
         console.log({e});
       })
