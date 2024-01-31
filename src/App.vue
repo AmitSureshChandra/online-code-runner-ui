@@ -3,7 +3,7 @@
     <div class="editor-container">
       <div>
         <select v-model="language" @change="setDefaultCode" class="language-select">
-          <option v-for="(item, index) in compilers" :key="index" :value="index">{{item}}</option>
+          <option v-for="(item, index) in compilers" :key="index" :value="index">{{ item }}</option>
         </select>
         <button @click="resetCode" :disabled="loading" class="reset-button">Reset Code</button>
       </div>
@@ -16,7 +16,7 @@
     </div>
     <div class="output-container">
       <label class="output-label">Output:</label>
-      <pre class="output">{{ output }}</pre>
+      <pre :style="error ? 'color: red' : ''" class="output">{{ output }}</pre>
     </div>
   </div>
 </template>
@@ -27,19 +27,14 @@ export default {
   name: "App",
   data() {
     return {
-      language: "jdk8",
+      language: "jdk",
       sampleCode: {
-        jdk8 : `class Solution  {
+        jdk: `class Solution  {
    public static void main(String[] args) {
        System.out.println("Hello World");
    }
 }`,
-      jdk20:  `class Solution  {
-   public static void main(String[] args) {
-       System.out.println("Hello World");
-   }
-}`,
-      golang12 : `package main
+        golang12: `package main
 
 import "fmt"
 
@@ -48,17 +43,12 @@ func main() {
 }`
       },
       bkSampleCode: {
-        jdk8 : `class Solution  {
+        jdk: `class Solution  {
    public static void main(String[] args) {
        System.out.println("Hello World");
    }
 }`,
-      jdk20:  `class Solution  {
-   public static void main(String[] args) {
-       System.out.println("Hello World");
-   }
-}`,
-      golang12 : `package main
+        golang12: `package main
 
 import "fmt"
 
@@ -66,30 +56,31 @@ func main() {
     fmt.Println("Hello, World!")
 }`
       },
-      code : '',
+      code: '',
       input: "",
       output: "",
       loading: false,
-      compilers : {
-        
+      error: false,
+      compilers: {
+
       }
     };
   },
-  mounted(){
+  mounted() {
     this.loadCompilers()
-  },  
+  },
   methods: {
     loadCompilers() {
       this.loading = true
-      axios.get("/api/v1/run/compilers").then(({data}) => {
+      axios.get("/api/v1/run/compilers").then(({ data }) => {
         this.compilers = data
         this.code = this.sampleCode[this.language]
       }).catch(e => {
-        console.log({e});
+        console.log({ e });
       })
-      .finally(() => {
-        this.loading = false
-      })
+        .finally(() => {
+          this.loading = false
+        })
     },
     runCode() {
       // make a api call & then set output
@@ -98,17 +89,19 @@ func main() {
         compiler: this.language,
         code: this.code,
         input: this.input
-      }).then(({data}) => {
+      }).then(({ data }) => {
         this.output = data.output
-        if(data.exitCode != 0) {
+        this.error = false
+        if (!this.output) {
           this.output = data.error
+          this.error = true;
         }
       }).catch(e => {
-        console.log({e});
+        console.log({ e });
       })
-      .finally(() => {
-        this.loading = false
-      })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     setDefaultCode(e) {
@@ -116,7 +109,7 @@ func main() {
     },
 
     resetCode() {
-      if(confirm("You will lose you current code, Do you want to proceed?"))
+      if (confirm("You will lose you current code, Do you want to proceed?"))
         this.code = this.bkSampleCode[this.language]
     }
   },
@@ -163,9 +156,7 @@ func main() {
   cursor: pointer; */
 }
 
-.reset-button {
-
-}
+.reset-button {}
 
 .input-container {
   display: flex;
