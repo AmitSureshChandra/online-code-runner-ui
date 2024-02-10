@@ -1,23 +1,32 @@
 <template>
   <div class="container">
+    
     <div class="editor-container">
-      <div>
-        <select v-model="language" @change="setDefaultCode" class="language-select">
-          <option v-for="(item, index) in compilers" :key="index" :value="index">{{ item }}</option>
-        </select>
-        <button @click="resetCode" :disabled="loading" class="reset-button">Reset Code</button>
+
+      <div class="editor">
+        <div class="language-options-section">
+          <select v-model="language" @change="setDefaultCode" class="language-select">
+            <option v-for="(item, index) in compilers" :key="index" :value="index">{{ item }}</option>
+          </select>
+          <button @click="resetCode" :disabled="loading" class="reset-button">Reset Code</button>
+        </div>
+        <textarea v-model="code" class="code-block" placeholder="Type your code here" @keydown="editorKeyHandle"></textarea>
       </div>
-      <textarea v-model="code" class="editor" placeholder="Type your code here"></textarea>
+
       <button @click="runCode" :disabled="loading" class="run-button">Run Code</button>
     </div>
-    <div class="input-container">
-      <label class="input-label">Input:</label>
-      <textarea v-model="input" class="input" placeholder="Type your input here"></textarea>
+
+    <div class="sideways-container">
+      <div class="input-container">
+        <label class="input-label">Input:</label>
+        <textarea v-model="input" class="input" placeholder="Type your input here"></textarea>
+      </div>
+      <div class="output-container">
+        <label class="output-label">Output:</label>
+        <pre :style="error ? 'color: red' : ''" class="output">{{ output }}</pre>
+      </div>
     </div>
-    <div class="output-container">
-      <label class="output-label">Output:</label>
-      <pre :style="error ? 'color: red' : ''" class="output">{{ output }}</pre>
-    </div>
+
   </div>
 </template>
 
@@ -125,8 +134,14 @@ func main() {
 
     sleep(delay) {
       return new Promise((resolve) => setTimeout(resolve, delay))
-    }
+    },
 
+    editorKeyHandle(e){
+        if(e.key == 'Tab'){
+          e.preventDefault();
+          this.code += "\t";
+        }
+    }
   },
 };
 </script>
@@ -134,14 +149,15 @@ func main() {
 <style>
 .container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
   padding: 20px;
+  justify-content: space-between;
 }
 
 .editor-container {
   display: flex;
-  width: 100%;
+  width: 70%;
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
@@ -154,16 +170,38 @@ func main() {
 
 .editor {
   width: 100%;
-  height: 200px;
-  font-size: 14px;
+  height: 500px;
   padding: 10px;
   border: 1px solid #ccc;
+  /* padding: 20px; */
+}
+
+.language-options-section{
+  float: right;
+}
+
+.code-block {
+  width: 99%;
+  height: 90%;
+  font-size: 14px;
+  /* border: 1px solid #ccc; */
   resize: none;
+  outline: none;
+  border: none;
+}
+
+.code-block:focus{
+  font-size: 16px;
+}
+
+.input-handler{
+  float: right;
 }
 
 .run-button {
-  /* margin-top: 10px;
-  padding: 10px 20px;
+   margin-top: 10px;
+  /*
+   padding: 10px 20px;
   background-color: #007bff;
   color: #fff;
   border: none;
