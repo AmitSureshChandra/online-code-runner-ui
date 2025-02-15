@@ -88,7 +88,8 @@ func main() {
       axios.post("/api/v1/run", {
         compiler: this.language,
         code: this.code,
-        input: this.input
+        input: this.input,
+        timeout: 1500
       }).then(({ data }) => {
         this.output = data.output
         this.error = false

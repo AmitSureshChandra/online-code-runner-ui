@@ -90,7 +90,8 @@ func main() {
       let respData = await axios.post("/api/v1/run/async", {
         compiler: this.language,
         code: this.code,
-        input: this.input
+        input: this.input,
+        timeout: 1500
       })
 
       const excId = respData.data
